@@ -1,0 +1,16 @@
+For testing we need the following packages ==>
+"@types/jest": "^28.1.6",
+"@types/supertest": "^2.0.12",
+"jest": "^28.1.3",
+"mongodb-memory-server": "^8.8.0",
+"supertest": "^6.2.4",
+"ts-jest": "^28.0.7"
+_Ignore the version numbers_
+
+Create a test folder and have a setup.ts to setup the tests also have a "jest" configure in package.json
+When we run test via jest the jest package will look for **test** folder and execute each file with the extension .test.ts / .test.js !!
+It will run all the it('', async () => {}) functions which has a callback !!
+
+Now typescript to make it run we need to convert it into corresponding js files !!
+So the command tsc is used to do that it converts the .ts files into .js files and .d.ts files
+Now we can specify which directory to build the .js and its corresponding .d.ts files in the package.json file

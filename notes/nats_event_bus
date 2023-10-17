@@ -1,0 +1,42 @@
+NATS and NATS STREAMING SERVER
+
+Is just an event bus.
+
+There will be channels and each service will be listening to a specific channel !!
+For example if there is a ticket service and the nats streaming will be having a tickets channel
+and the ticket service will be listening to tickets channel !!
+\\\\\\\\\\
+NATS streaming server will store all events in memory, but can be made to store in flat files or Databases !!
+We need two npm scripts, one to run code to emit events and one to run code to listen for the events !!
+
+We need to forward requests to the NATS pod there are three options to do this !!
+
+1. Have the ingress controller handle the communication ( A lot of config to write )
+2. Have a Node Port Service ( Again very heavy weight )
+3. Port - Forward To a specific port , a command that tells a kubernetes cluster to forward the request to a specific port.
+
+Publisher and listeners
+
+A publisher is the code that publishes data by using a subject/channel name
+A listener listens to a specific channel (Like socket)
+
+Create different client-id and add it to the client list in the nats server (unique client id tho)
+nats.connect("service-name", "client-id", {
+url: "url!!",
+}); It is required if we want to connect multiple listener instances (The same instance).
+
+If we create two different instances of the same listener then the event needs to be listened by only one of the listener !! Or else there can be duplicates. We create queue groups to handle this.
+
+Queue Groups :- queue groups are groups we create inside of a Channel !! So for example if we have a channel name ticket:created we will have a queue group inside that. We can have multiple listeners listening to the queue group, the NATS-SERVER will choose any one listner to broadcast the data it received.
+Now if there is a listener that is listening to the channel and is not part of the queue group it will receive the event.
+
+What will happen if there is an error in any service listener !!?
+Lets say a service listener got an event and it has to store some data into the db and due to some technical problem, the data could not be stored in the db. Here we would need some kind of defence mechanism / acknowledgment to be sent to the nats server that there is some error that happened so send the event again to the service listener. This can be handled using setManualAckMode() !! when using ManualAckMode we have to send an acknowledgement to the NATS-SERVER, and if NATS-SERVER does not get an acknowledgement it will resend the event either to the same service listner or to another one in the queue group !! it is done using msg.ack();
+
+To check the monitoring of the NATS-SERVER go to localhost:8222/streaming after port forwarding so that we can access the nats-monitioring pod in out cluster.
+
+to check the subscriptions of the channles go to localhost:8222/streaming/channelsz?subs=1
+
+Another issue to resolve is that when we kill one subscription and start another one ! NATS-SERVER will wait some time to see if the subscription we killed will come back online or not and then will not push any event untill it comes back online, if 30 seconds passes by and still the subscription is dead, it sends the event to an active subscription instead, We need to FIX this and we handle it by =====>
+
+Durable subscription :- If our listeners have missed on any event to be processed, we can use this durable subscription (NATS feature) to get the event not processed !! .setDurableName('Id') _Adding queue GROUP_ Chapter Durable Subscription
