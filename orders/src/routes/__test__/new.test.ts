@@ -8,7 +8,7 @@ import { natsWrapper } from "../../nats-wrapper";
 it("returns an erorr if the ticket does not exist", async () => {
   // const ticketId = new mongoose.Types.ObjectId();
   await request(app)
-    .post("api/orders")
+    .post("api/orders/")
     .set("Cookie", global.signin())
     .send({ ticketId: "asdf" })
     .expect(404);
