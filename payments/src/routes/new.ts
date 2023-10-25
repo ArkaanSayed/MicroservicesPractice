@@ -36,6 +36,7 @@ router.post(
     }
 
     if (order.status === OrderStatus.Cancelled) {
+      console.log("Order is canceled");
       throw new BadRequestError("Order is cancelled");
     }
 
