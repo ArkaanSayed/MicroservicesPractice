@@ -6,11 +6,11 @@ import { Order, OrderStatus } from "../../models/orders";
 import { natsWrapper } from "../../nats-wrapper";
 
 it("returns an erorr if the ticket does not exist", async () => {
-  const ticketId = new mongoose.Types.ObjectId();
+  // const ticketId = new mongoose.Types.ObjectId();
   await request(app)
     .post("api/orders")
     .set("Cookie", global.signin())
-    .send({ ticketId })
+    .send({ ticketId: "asdf" })
     .expect(404);
 });
 it("returns an erorr if the ticket is already reserved", async () => {
