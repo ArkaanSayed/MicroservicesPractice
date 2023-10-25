@@ -10,7 +10,7 @@ it("returns an erorr if the ticket does not exist", async () => {
   await request(app)
     .post("api/orders")
     .set("Cookie", global.signin())
-    .send({ ticketId: "12313adafs" })
+    .send({ ticketId: "asdf" })
     .expect(404);
 });
 it("returns an erorr if the ticket is already reserved", async () => {
